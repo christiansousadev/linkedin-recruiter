@@ -1,0 +1,41 @@
+# DEPENDÊNCIAS (Frontend e Backend)
+node_modules/
+package-lock.json
+
+# NEXT.JS E BUILD (Frontend)
+.next/
+out/
+build/
+.swc/
+
+# VARIÁVEIS DE AMBIENTE E SEGURANÇA
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ARQUIVOS GERADOS PELO MOTOR (Backend)
+# Ignora os relatórios, planilhas e logs gerados dinamicamente
+audit_logs.jsonl
+auditoria_*.json
+talentos_*.xlsx
+talentos_*.json
+
+# LOGS DO NODE E NPM
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ARQUIVOS DE SISTEMA OPERACIONAL E EDITORES
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# PLAYWRIGHT (Se houver cache local)
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/

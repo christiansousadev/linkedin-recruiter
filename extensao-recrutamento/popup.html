@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 300px; margin: 0; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: #0f172a; }
+    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 16px; }
+    .logo { background: #2563eb; color: white; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(37,99,235,0.2); }
+    .title-box { display: flex; flex-direction: column; }
+    h1 { margin: 0; font-size: 15px; font-weight: 700; color: #1e293b; }
+    p.subtitle { margin: 2px 0 0; font-size: 12px; color: #64748b; font-weight: 500; }
+    .dev-badge { margin-top: 16px; font-size: 11px; color: #94a3b8; text-align: center; font-weight: 500; }
+    button { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: #2563eb; color: white; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    button:hover { background: #1d4ed8; }
+    button.success { background: #16a34a; }
+    button.error { background: #dc2626; }
+    svg { width: 16px; height: 16px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="icon.png" alt="Logo" style="width: 24px; height: 24px; object-fit: contain; border-radius: 4px;" />
+    </div>
+    <div class="title-box">
+      <h1>Autenticador Pipeline</h1>
+      <p class="subtitle">Captura Segura de Sessão</p>
+    </div>
+  </div>
+  
+  <button id="copy-btn">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+    Copiar Token (li_at)
+  </button>
+  
+  <div class="dev-badge">Desenvolvido por Christian Sousa </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Autenticador Pipeline Linkedin",
+  "version": "1.1",
+  "author": "Christian Sousa",
+  "description": "Ponte segura de autenticação entre a sessão ativa do LinkedIn e o motor de extração.",
+  "permissions": [
+    "cookies"
+  ],
+  "host_permissions": [
+    "*://*.linkedin.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}
