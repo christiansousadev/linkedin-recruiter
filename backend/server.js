@@ -241,7 +241,7 @@ async function DOWNLOAD_PROFILE_PDF(page, profileUrl) {
   await page.waitForTimeout(3000);
 
   // Configura captura do download ANTES dos cliques
-  const downloadPromise = page.waitForEvent("download", { timeout: 40000 });
+  const downloadPromise = page.waitForEvent("download", { timeout: 60000 });
 
   // foca no conteudo principal para ignorar a barra de navegação
   const moreBtn = page
@@ -250,7 +250,7 @@ async function DOWNLOAD_PROFILE_PDF(page, profileUrl) {
     .first();
 
   // Garante que o botão está visível antes de clicar
-  await moreBtn.waitFor({ state: "visible", timeout: 15000 });
+  await moreBtn.waitFor({ state: "visible", timeout: 30000 });
   await moreBtn.click();
 
   // Aguarda o dropdown e clica em "Salvar como PDF"
@@ -258,7 +258,7 @@ async function DOWNLOAD_PROFILE_PDF(page, profileUrl) {
   const pdfMenuItem = page
     .locator('[role="menuitem"]')
     .filter({ hasText: "Salvar como PDF" });
-  await pdfMenuItem.waitFor({ state: "visible", timeout: 10000 });
+  await pdfMenuItem.waitFor({ state: "visible", timeout: 30000 });
   await pdfMenuItem.click();
 
   // Captura o download
