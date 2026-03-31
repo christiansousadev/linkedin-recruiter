@@ -7,6 +7,14 @@ import fs from "fs/promises";
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import dotenv from "dotenv";
 
+process.on("unhandledRejection", reason => {
+  if (
+    reason?.message?.includes("Target page, context or browser has been closed")
+  )
+    return;
+  console.error("Unhandled rejection:", reason);
+});
+
 dotenv.config();
 chromium.use(stealthPlugin());
 
@@ -236,38 +244,33 @@ async function DOWNLOAD_PROFILE_PDF(page, profileUrl) {
     timeout: 45000
   });
 
-  // Aguarda a seção de ações do perfil carregar
-  // O botão "Mais" do perfil só aparece após o card principal renderizar
   await page.waitForTimeout(3000);
 
-  // Configura captura do download ANTES dos cliques
+  // absorve rejeição caso o fluxo seja interrompido antes do await
   const downloadPromise = page.waitForEvent("download", { timeout: 60000 });
+  downloadPromise.catch(() => {});
 
-  // foca no conteudo principal para ignorar a barra de navegação
+  // tenta aria-label em pt e en
   const moreBtn = page
     .locator("main")
-    .locator('button[aria-label="Mais"]')
+    .locator("button")
+    .filter({ hasText: /^Mais$|^More$/i })
     .first();
 
-  // Garante que o botão está visível antes de clicar
   await moreBtn.waitFor({ state: "visible", timeout: 30000 });
   await moreBtn.click();
 
-  // Aguarda o dropdown e clica em "Salvar como PDF"
-  // Debug confirmou: role="menuitem", texto interno "Salvar como PDF"
   const pdfMenuItem = page
     .locator('[role="menuitem"]')
-    .filter({ hasText: "Salvar como PDF" });
+    .filter({ hasText: /Salvar como PDF|Save to PDF/i });
   await pdfMenuItem.waitFor({ state: "visible", timeout: 30000 });
   await pdfMenuItem.click();
 
-  // Captura o download
   const download = await downloadPromise;
   const tmpPath = await download.path();
   if (!tmpPath) throw new Error("Caminho do PDF não disponível");
 
-  const buffer = await fs.readFile(tmpPath);
-  return buffer;
+  return await fs.readFile(tmpPath);
 }
 
 // EXTRAI TEXTO DO BUFFER PDF USANDO PDFJS-DIST
@@ -291,18 +294,42 @@ async function SCRAPE_LINKEDIN_URL(
   emitEvent,
   req
 ) {
-  const browser = await chromium.launch({ headless: false });
-  const context = await browser.newContext({
-    viewport: { width: 1366, height: 768 },
+  // Grava as preferências de idioma no perfil persistente
+  const profileDir = "./chrome-profile";
+  const prefsDir = `${profileDir}/Default`;
+  await fs.mkdir(prefsDir, { recursive: true });
+  await fs.writeFile(
+    `${prefsDir}/Preferences`,
+    JSON.stringify({
+      translate_blocked_languages: ["pt"],
+      translate: { enabled: false },
+      intl: { accept_languages: "pt-BR,pt" }
+    })
+  );
+
+  const context = await chromium.launchPersistentContext(profileDir, {
+    headless: false,
     acceptDownloads: true,
-    locale: "pt-BR"
+    locale: "pt-BR",
+    args: [
+      "--disable-features=Translate,TranslateUI,TranslateSubFrames",
+      "--lang=pt-BR"
+    ],
+    extraHTTPHeaders: {
+      "Accept-Language": "pt-BR,pt;q=0.9"
+    }
+  });
+
+  context.on("page", newPage => {
+    newPage.on("crash", () => {});
+    newPage.on("pageerror", () => {});
   });
 
   await context.addCookies([
     { name: "li_at", value: cookie, domain: ".www.linkedin.com", path: "/" }
   ]);
 
-  const page = await context.newPage();
+  const page = context.pages()[0];
   let allCandidates = [];
   let uniqueCandidates = [];
 
@@ -452,7 +479,7 @@ async function SCRAPE_LINKEDIN_URL(
       error: fatalError.message
     });
   } finally {
-    await browser.close();
+    await context.close();
   }
 
   // retorna o que conseguiu capturar ate o momento da interrupção
